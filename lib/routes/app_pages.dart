@@ -7,6 +7,9 @@ import '../screens/transactions/add_transaction_screen.dart';
 import '../screens/report/report_screen.dart';
 import '../screens/accounts/accounts_screen.dart';
 import '../screens/settings/settings_screen.dart';
+import '../screens/categories/cat_home.dart';
+import '../screens/categories/add_cat.dart';
+import '../screens/profile/u_profile.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -19,5 +22,17 @@ class AppPages {
     GetPage(name: AppRoutes.report, page: () => ReportScreen()),
     GetPage(name: AppRoutes.accounts, page: () => AccountsScreen()),
     GetPage(name: AppRoutes.settings, page: () => SettingsScreen()),
+    GetPage(
+      name: AppRoutes.expenseCat,
+      page: () => const ExpenseCategoryScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.addCategory,
+      page: () {
+        final type = Get.arguments as String? ?? 'expense';
+        return AddCategoryPage(type: type);
+      },
+    ),
+    GetPage(name: AppRoutes.profile, page: () => UserProfileScreen()),
   ];
 }

@@ -3,11 +3,14 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/login_btn.dart';
+
 class LoginScreen extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  final RxBool _obscureText = true.obs;
 
   LoginScreen({super.key});
 
@@ -15,50 +18,79 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Đăng nhập')),
-      body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Image.asset(
-              "assets/logo1.png",
-              width: double.maxFinite,
-              height: 250,
-              fit: BoxFit.cover,
-            ),
-            TextField(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Image.asset(
+                "assets/logo1.png",
+                width: double.infinity,
+                height: 350,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 20),
+              TextField(
                 controller: emailController,
                 decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                )),
-            SizedBox(height: 20),
-            TextField(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Obx(() => TextField(
                 controller: passwordController,
+                obscureText: _obscureText.value,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Mật khẩu',
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.visibility),)
+                    icon: Icon(
+                      _obscureText.value
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      _obscureText.value = !_obscureText.value;
+                    },
+                  ),
                 ),
-                obscureText: true),
-            const SizedBox(height: 20),
-            Obx(() => _authController.isLoading.value
-                ? const CircularProgressIndicator()
-                : LoginBtn(
-              onTap: () {
-                _authController.login(
-                    emailController.text, passwordController.text);
-              },
-              buttonText: 'Đăng nhập',
-              // color: Colors.blue, // bạn có thể thêm nếu muốn đổi màu nút
-            )),
-
-            TextButton(
-                onPressed: () => Get.toNamed(AppRoutes.register),
-                child: const Text("Bạn đã có tài khoản chưa? Đăng ký"))
-          ],
+              )),
+              const SizedBox(height: 20),
+              Obx(() => _authController.isLoading.value
+                  ? const CircularProgressIndicator()
+                  : LoginBtn(
+                onTap: () {
+                  _authController.login(
+                    emailController.text.trim(),
+                    passwordController.text.trim(),
+                  );
+                },
+                buttonText: 'Đăng nhập',
+              )),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Bạn chưa có tài khoản?",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  TextButton(
+                    onPressed: () => Get.toNamed(AppRoutes.register),
+                    child: const Text(
+                      "Đăng ký",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
