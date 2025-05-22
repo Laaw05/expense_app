@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/transaction_service.dart';
+import '../../services/transaction_service.dart';
 
 Future<void> handleAddTransaction({
   required String categoryId,

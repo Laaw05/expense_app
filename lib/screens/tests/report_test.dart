@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/transaction_controller.dart';
 
-class ReportScreen extends StatelessWidget {
+class TotalOverviewScreen extends StatelessWidget {
   final String userId;
 
-  ReportScreen({super.key, required this.userId});
+  TotalOverviewScreen({super.key, required this.userId});
 
   final TransactionController controller = Get.put(TransactionController());
 

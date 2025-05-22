@@ -5,7 +5,6 @@ abstract class AppRoutes {
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
   static const report = '/report';
-  static const accounts = '/accounts';
   static const settings = '/settings';
   static const expenseCat = '/expense-category';
   static const addCategory = '/add-category';

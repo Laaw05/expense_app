@@ -30,7 +30,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   void _signOut() async {
     await Supabase.instance.client.auth.signOut();
-    Get.offAllNamed(AppRoutes.login); // Chuyển về màn hình đăng nhập
+    Get.offAllNamed(AppRoutes.login);
   }
 
   @override
@@ -56,7 +56,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Phần thông tin người dùng
                 const SizedBox(height: 16),
                 Center(
                   child: CircleAvatar(
@@ -81,8 +80,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   child: Text('Ngày tạo tài khoản: $createdAtStr'),
                 ),
                 const SizedBox(height: 24),
-
-                // Phần danh sách các lựa chọn
                 Expanded(
                   child: ListView(
                     children: [

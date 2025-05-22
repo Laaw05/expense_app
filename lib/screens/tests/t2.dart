@@ -4,20 +4,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/category_service.dart';
 import '../../routes/app_routes.dart';
 import '../profile/u_profile.dart';
-import '../report/report_screen.dart';
 import '../../controllers/home_controller.dart';
-import '../../screens/settings/settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   final HomeController controller = Get.put(HomeController());
 
-  final List<Widget> _screens = [
-    const HomeContent(),
-    ReportScreen(userId: 'e6918b3c-e633-4c76-8df2-a1232e70b0b0',),
-    const UserProfileScreen(),
-    SettingsScreen(),
+  final List<Widget> _screens = const [
+    HomeContent(),
+    Center(child: Text('Report Screen')),
+    UserProfileScreen(),
+    Center(child: Text('Settings Screen')),
   ];
 
   @override
@@ -52,20 +50,10 @@ class _HomeContentState extends State<HomeContent> {
   String selectedType = 'expense';
   late Future<List<Map<String, dynamic>>> _futureCategories;
 
-  String? selectedCategoryId;
-
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController noteController = TextEditingController();
-  final TextEditingController amountController = TextEditingController(text: '0');
-
-  DateTime selectedDate = DateTime.now();
-
   @override
   void initState() {
     super.initState();
     loadCategories();
-
-    dateController.text = _formatDate(selectedDate);
   }
 
   void loadCategories() {
@@ -78,123 +66,43 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    return "${date.day}/${date.month}/${date.year} (Th ${date.weekday})";
-  }
-
   Widget _buildCategoryItem(Map<String, dynamic> category) {
-    bool isSelected = category['id'] == selectedCategoryId;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategoryId = category['id'];
-        });
-      },
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: isSelected
-              ? BorderSide(color: Colors.blue, width: 2)
-              : BorderSide(color: Colors.transparent),
-        ),
-        color: isSelected ? Colors.blue.shade50 : Colors.white,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.category, color: Colors.blue, size: 30),
-              const SizedBox(height: 4),
-              Text(
-                category['name'],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.blue : Colors.black,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.category, color: Colors.blue, size: 30),
+            const SizedBox(height: 4),
+            Text(
+              category['name'],
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        dateController.text = _formatDate(picked);
-      });
-    }
-  }
-
-  void _onSubmit() async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) {
-      Get.snackbar('Lỗi', 'Bạn chưa đăng nhập');
-      return;
-    }
-    if (selectedCategoryId == null) {
-      Get.snackbar('Lỗi', 'Vui lòng chọn danh mục');
-      return;
-    }
-
-    final amount = double.tryParse(amountController.text);
-    if (amount == null || amount <= 0) {
-      Get.snackbar('Lỗi', 'Vui lòng nhập số tiền hợp lệ');
-      return;
-    }
-
-    final note = noteController.text.trim();
-
-    final newTransaction = {
-      'user_id': userId,
-      'category_id': selectedCategoryId,
-      'amount': amount,
-      'note': note,
-      'type': selectedType,
-      'date': selectedDate.toIso8601String(),
-      'created_at': DateTime.now().toIso8601String(),
-    };
-
-    final response = await Supabase.instance.client
-        .from('transactions')
-        .insert(newTransaction);
-
-    if (response.error != null) {
-      Get.snackbar('Lỗi', 'Không thể lưu giao dịch: ${response.error!.message}');
-    } else {
-      Get.snackbar('Thành công', 'Đã lưu giao dịch');
-      // Reset form
-      setState(() {
-        noteController.clear();
-        amountController.text = '0';
-        selectedCategoryId = null;
-        selectedDate = DateTime.now();
-        dateController.text = _formatDate(selectedDate);
-        loadCategories();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String formattedDate = "${now.day}/${now.month}/${now.year} (Th ${now.weekday})";
+
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Phần 1: Chọn loại danh mục
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
@@ -204,7 +112,6 @@ class _HomeContentState extends State<HomeContent> {
                       onPressed: () {
                         setState(() {
                           selectedType = 'expense';
-                          selectedCategoryId = null;
                           loadCategories();
                         });
                       },
@@ -213,7 +120,7 @@ class _HomeContentState extends State<HomeContent> {
                             ? Colors.blue
                             : Colors.grey.shade200,
                       ),
-                      child: Text('Tiền chi',
+                      child: Text('Tiến chi',
                           style: TextStyle(
                             color: selectedType == 'expense'
                                 ? Colors.white
@@ -227,7 +134,6 @@ class _HomeContentState extends State<HomeContent> {
                       onPressed: () {
                         setState(() {
                           selectedType = 'income';
-                          selectedCategoryId = null;
                           loadCategories();
                         });
                       },
@@ -236,7 +142,7 @@ class _HomeContentState extends State<HomeContent> {
                             ? Colors.blue
                             : Colors.grey.shade200,
                       ),
-                      child: Text('Tiền thu',
+                      child: Text('Tiến thu',
                           style: TextStyle(
                             color: selectedType == 'income'
                                 ? Colors.white
@@ -247,8 +153,9 @@ class _HomeContentState extends State<HomeContent> {
                 ],
               ),
             ),
+
+            // Phần 2: Nhập ngày, ghi chú, số tiền
             TextField(
-              controller: dateController,
               decoration: InputDecoration(
                 labelText: 'Ngày',
                 suffixIcon: const Icon(Icons.calendar_today),
@@ -256,12 +163,14 @@ class _HomeContentState extends State<HomeContent> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
+              controller: TextEditingController(text: formattedDate),
               readOnly: true,
-              onTap: _pickDate,
+              onTap: () async {
+                // TODO: Thêm chọn ngày nếu cần
+              },
             ),
             const SizedBox(height: 8),
             TextField(
-              controller: noteController,
               decoration: InputDecoration(
                 labelText: 'Ghi chú',
                 hintText: 'Chưa nhập vào',
@@ -272,7 +181,6 @@ class _HomeContentState extends State<HomeContent> {
             ),
             const SizedBox(height: 8),
             TextField(
-              controller: amountController,
               decoration: InputDecoration(
                 labelText: selectedType == 'expense' ? 'Tiền chi' : 'Tiền thu',
                 suffixText: 'đ',
@@ -280,9 +188,12 @@ class _HomeContentState extends State<HomeContent> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
+              controller: TextEditingController(text: '0'),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
+
+            // Phần 3: Danh sách danh mục
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: _futureCategories,
@@ -329,6 +240,7 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                         );
                       }
+
                       final category = categories[index];
                       return _buildCategoryItem(category);
                     },
@@ -336,12 +248,16 @@ class _HomeContentState extends State<HomeContent> {
                 },
               ),
             ),
+
+            // Phần 4: Nút "Nhập khoản chi/thu"
             const SizedBox(height: 16),
             Center(
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _onSubmit,
+                  onPressed: () {
+                    // TODO: Xử lý khi nhấn
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     padding: const EdgeInsets.symmetric(vertical: 16),

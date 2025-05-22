@@ -37,6 +37,7 @@ dependencies:
   supabase_flutter: ^2.9.0
   get: ^4.7.2
   intl: ^0.20.2
+  fl_chart: ^1.0.0
 
 dev_dependencies:
   flutter_test:
