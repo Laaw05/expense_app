@@ -43,7 +43,6 @@ class TransactionService {
     return (response as List).map((e) => Transaction.fromJson(e)).toList();
   }
 
-  /// 🔍 Dùng cho ReportScreen: lấy giao dịch trong khoảng thời gian
   Future<List<Transaction>> fetchTransactionsByDateRange(DateTime start,
       DateTime end) async {
     final response = await _client

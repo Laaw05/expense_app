@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/transaction_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReportScreen extends StatelessWidget {
-  final String userId;
-
-  ReportScreen({super.key, required this.userId});
+  ReportScreen({super.key});
 
   final TransactionController controller = Get.put(TransactionController());
 
   @override
   Widget build(BuildContext context) {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+
+    if (userId == null) {
+      return const Scaffold(
+        body: Center(child: Text("Chưa đăng nhập")),
+      );
+    }
+
     controller.fetchTotals(userId);
+
+    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Tổng Thu & Chi')),
@@ -20,8 +29,6 @@ class ReportScreen extends StatelessWidget {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
 
         return Padding(
           padding: const EdgeInsets.all(20.0),
@@ -54,6 +61,7 @@ class ReportScreen extends StatelessWidget {
       }),
     );
   }
+
 
   Widget _buildBox({
     required String title,

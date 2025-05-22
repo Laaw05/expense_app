@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
 
   final List<Widget> _screens = [
     const HomeContent(),
-    ReportScreen(userId: 'e6918b3c-e633-4c76-8df2-a1232e70b0b0',),
+    ReportScreen(),
     const UserProfileScreen(),
     SettingsScreen(),
   ];

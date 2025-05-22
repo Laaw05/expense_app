@@ -15,7 +15,7 @@ class AppPages {
     GetPage(name: AppRoutes.login, page: () => LoginScreen()),
     GetPage(name: AppRoutes.register, page: () => RegisterScreen()),
     GetPage(name: AppRoutes.home, page: () => HomeScreen()),
-    GetPage(name: AppRoutes.report, page: () => ReportScreen(userId: 'e6918b3c-e633-4c76-8df2-a1232e70b0b0',)),
+    GetPage(name: AppRoutes.report, page: () => ReportScreen()),
     GetPage(name: AppRoutes.settings, page: () => SettingsScreen()),
     GetPage(
       name: AppRoutes.expenseCat,
