@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../screens/categories/default_cat.dart';
 
 class AuthService {
   final supabase = Supabase.instance.client;
